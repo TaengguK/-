@@ -1,0 +1,93 @@
+#include<iostream>
+#include<vector>
+#include<string>
+using namespace std;
+/*
+题目
+输入两个数n，m 表示矩阵大小
+第二次输入小球开始的位置i， j 以及开始的方向direction
+求小球回到开始位置时所耗费的时间
+*/
+/*
+记得写题之前一定要先构思好，不要一上来就开始写，很容易浪费大量时间在debug上！
+错误思路：
+1.一开始没考虑好，直接进行dps，其实这道题根本不需要回溯，使用dps只会使得每次所在位置回溯。
+2.在反弹的时候，一定要考虑碰到的是哪个边界，不然会计算错误反弹之后的方向
+正确思路：用迭代可以解决
+记得在开始的时候加上一个是否是第一次碰到起始点，否则一开始循环就结束了
+*/
+void commomChangeDirection(string& direction, string border) {
+	if (direction == "DL") {
+		if (border == "down") direction = "UL";
+		else if (border == "left") direction = "DR";
+	}
+	else if (direction == "UL") {
+		if (border == "up") direction = "DL";
+		else if (border == "left") direction = "UR";
+	}
+	else if (direction == "DR") {
+		if (border == "down") direction = "UR";
+		else if (border == "right") direction = "DL";
+	}
+	else if (direction == "UR") {
+		if (border == "up") direction = "DR";
+		else if (border == "right") direction = "UL";
+	}
+}
+void specialChangeDirection(string& direction) {
+	if (direction == "DR") direction = "UL";
+	else if (direction == "UR") direction = "DL";
+	else if (direction == "DL") direction = "UR";
+	else if (direction == "UL") direction = "DR";
+}
+int main() {
+	int n, m, iStart, jStart;
+	string direction;
+	cin >> n >> m;
+	cin >> iStart >> jStart >> direction;
+	int iCur = iStart, jCur = jStart;
+	int result = 0;
+	bool first = true;
+	string border = "";
+	while (true) {
+		cout << "iCur: " << iCur << "jCur: " << jCur << "direction: " << direction << endl;
+		if (!first) {
+			if (iCur == iStart && jCur == jStart) break;
+			if (iCur == 1 || iCur == n || jCur == 1 || jCur == m) 
+			{
+				if (iCur == 1 && jCur == 1) specialChangeDirection(direction);
+				else if (iCur == 1 && jCur == m) specialChangeDirection(direction);
+				else if (iCur == n && jCur == 1) specialChangeDirection(direction);
+				else if (iCur == n && jCur == m) specialChangeDirection(direction);
+				else {
+					if (iCur == 1) {
+						border = "up";
+						commomChangeDirection(direction, border);
+					}
+					else if (iCur == n) {
+						border = "down";
+						commomChangeDirection(direction, border);
+					}
+					else if (jCur == 1) {
+						border = "left";
+						commomChangeDirection(direction, border);
+					}
+					else if (jCur == m) {
+						border = "right";
+						commomChangeDirection(direction, border);
+					}
+				}
+				cout << "change direction: " << direction << endl;
+			}
+		}
+		result++;
+		first = false;
+		if (direction == "DL") iCur++, jCur--;
+		if (direction == "DR") iCur++, jCur++;
+		if (direction == "UL") iCur--, jCur--;
+		if (direction == "UR") iCur--, jCur++;
+		
+	}
+	cout << result;
+	return 0;
+}
